@@ -23,9 +23,16 @@ class Database{
     public function query($sSQL = '')
     {
         $rResult = $this->connection->query($sSQL);
-        if ($rResult->num_rows > 0)
+        if (is_object($rResult) && $rResult->num_rows > 0)
             return new ResultSet($rResult);
+        elseif ($rResult == 1)
+            return true;
         else die($this->connection->error);
+    }
+
+    public function affectedRows()
+    {
+        return $this->connection->affected_rows;
     }
 
     function verify($sUsername, $sPassword)

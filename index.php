@@ -9,6 +9,7 @@
  */
 require_once('classes/database.php');
 require_once('includes/header.php');
+
 ?>
 
 <div class="container">
