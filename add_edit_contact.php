@@ -8,10 +8,13 @@
  * Copyright: This system/file is owned by Peace Dube. Unauthorised copying is prohibited
  */
 require_once('classes/database.php');
+require_once('includes/functions.php');
 require_once('includes/header.php');
 
 // instantiate our database class
 $database = new Database("127.0.0.1", "root", "", "phpcrud");
+
+$statusArray = array('inactive', 'active');
 
 $saveUpdateBtn = "<input type=\"submit\" name=\"action\" class=\"btn btn-primary\" value=\"Save\">";
 $disabled = $message = $editFirstname = $editLastname = $editContact = $editEmail = $editDateCreated = '';
@@ -48,10 +51,13 @@ elseif ($action == 'Edit')
 
     // get data to be edited
     $contactInfo = $database->query("select * from contacts where id=$contactID")->fetchrow();
+    $editContactID  = $contactInfo['id'];
     $editFirstname  = $contactInfo['firstname'];
     $editLastname   = $contactInfo['lastname'];
     $editContact    = $contactInfo['contact'];
     $editEmail      = $contactInfo['email'];
+
+    $statusOptions = selectOptions($statusArray, $contactInfo['active']);
 }
 elseif ($action == 'View')
 {
@@ -61,14 +67,31 @@ elseif ($action == 'View')
     // get data to be viewed
     $contactInfo = $database->query("select * from contacts where id=$contactID")->fetchrow();
     $editDateCreated = date('d M Y H:i a',$contactInfo['date_created']);
+    $editContactID  = $contactInfo['id'];
     $editFirstname  = $contactInfo['firstname'];
     $editLastname   = $contactInfo['lastname'];
     $editContact    = $contactInfo['contact'];
     $editEmail      = $contactInfo['email'];
-}
-elseif ($action == 'View')
-{
+    $statusOptions = selectOptions($statusArray, $contactInfo['active']);
 
+}
+elseif ($action == 'Update')
+{
+    $result = $database->query("update contacts set firstname='$firstname', lastname='$lastname', contact='$contact', email='$email', active=$active where id=$contactID");
+    if ($database->affectedRows() > 0)
+    {
+        $message = <<<HTML
+            <p class="alert alert-success">Record added successfully</p> 
+HTML;
+    }
+    else
+    {
+        $message = <<<HTML
+            <p class="alert alert-danger">Could not add contact</p> 
+HTML;
+    }
+
+    header("Location: add_edit_contact.php?contact_id=$contactID&action=View&status=Success");
 }
 
 ?>
@@ -92,6 +115,7 @@ elseif ($action == 'View')
         <div class="row">
             <div class="col-xs-12">
                 <form method="post" action="add_edit_contact.php">
+                    <input type="hidden" name="contact_id" value="<?= $editContactID; ?>">
                     <div class="form-group">
                         <label for="firstname">Firstname*:</label>
                         <input type="text" class="form-control" name="firstname" id="firstname" value="<?= $editFirstname; ?>" required="required" <?= $disabled ?> />
@@ -107,6 +131,10 @@ elseif ($action == 'View')
                     <div class="form-group">
                         <label for="contact">Email:</label>
                         <input type="email" class="form-control" name="email" id="email" value="<?= $editEmail; ?>"   <?= $disabled ?> />
+                    </div>
+                    <div class="form-group">
+                        <label for="contact">Status:</label>
+                        <select class="form-control" name="active" id="active" <?= $disabled ?>><?= $statusOptions; ?></select>
                     </div>
                     <?= $saveUpdateBtn ?>
                 </form>
