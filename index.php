@@ -14,7 +14,7 @@ require_once('includes/header.php');
 $database = new Database("127.0.0.1", "root", "", "phpcrud");
 
 $contactsArray = array();
-$contacts = $database->query("select * from contacts where active=1");
+$contacts = $database->query("select * from contacts where active=1 order by id desc");
 if ($contacts->numrows() > 0)
     while ($allContacts = $contacts->fetchrow())
     $contactsArray[] = $allContacts;
@@ -40,7 +40,9 @@ if ($contacts->numrows() > 0)
                     <?= $contact['firstname'].' '.$contact['lastname']; ?>
                     <span class="date pull-right"><i><?= date('d M Y H:i a', $contact['date_created']) ?></i></span>
                 </a>
-                <?php endforeach; endif; ?>
+                <?php endforeach; else: ?>
+                    <h3>You have no contacts</h3>
+                <?php endif; ?>
             </div>
         </div>
     </div>

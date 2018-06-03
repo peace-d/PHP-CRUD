@@ -23,7 +23,8 @@ class Database{
     public function query($sSQL = '')
     {
         $rResult = $this->connection->query($sSQL);
-        if (is_object($rResult) && $rResult->num_rows > 0)
+
+        if (is_object($rResult))
             return new ResultSet($rResult);
         elseif ($rResult == 1)
             return true;

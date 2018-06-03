@@ -93,6 +93,23 @@ HTML;
 
     header("Location: add_edit_contact.php?contact_id=$contactID&action=View&status=Success");
 }
+elseif ($action == 'Delete')
+{
+    $result = $database->query("delete from contacts where id=$contactID");
+    if ($database->affectedRows() > 0)
+    {
+        $message = <<<HTML
+            <p class="alert alert-success">Record added successfully</p> 
+HTML;
+    }
+    else
+    {
+        $message = <<<HTML
+            <p class="alert alert-danger">Could not add contact</p> 
+HTML;
+    }
+    header("Location: index.php");
+}
 
 ?>
 
@@ -107,7 +124,7 @@ HTML;
             <div class="col-xs-12">
                 <a href="index.php" class="btn btn-default">Back</a>
                 <?php if ($action == 'View'): ?>
-                    <a href="#" class="btn btn-danger" onclick="if(confirm('Are you sure you want to delete ?')) window.location='add_edit_contact.php?contact_id=&action=delete'">Delete</a>
+                    <a href="#" class="btn btn-danger" onclick="if(confirm('Are you sure you want to delete ?')) window.location='add_edit_contact.php?contact_id=<?= $contactID ?>&action=Delete'">Delete</a>
                     <a href="add_edit_contact.php?contact_id=<?= $contactID; ?>&action=Edit" class="btn btn-warning">Edit</a>
                 <?php endif; ?>
             </div>
